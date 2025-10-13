@@ -1,35 +1,47 @@
-import React, { useState } from 'react';
-import { GoogleLogin } from '@react-oauth/google';
-import { jwtDecode } from 'jwt-decode';
-
+import { useState, useEffect } from 'react';
+import logo from "../assets/logo.png";
+import { Link } from "react-router-dom";
 
 export default function Navbar() {
   const [user, setUser] = useState(null);
 
-  const handleLoginSuccess = (credentialResponse) => {
-    const decoded = jwtDecode(credentialResponse.credential);
-    setUser(decoded);
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    window.location.href = "/";
   };
 
-  const handleLogout = () => setUser(null);
-
   return (
-    <nav style={{ padding: 12, borderBottom: '1px solid #ddd', display: 'flex', justifyContent: 'space-between' }}>
-      <div><strong>Bloom</strong></div>
-      <div>
-        {user ? (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <img src={user.picture} alt="profile" style={{ width: 32, height: 32, borderRadius: '50%' }} />
-            <span>{user.name}</span>
-            <button onClick={handleLogout}>Logout</button>
-          </div>
-        ) : (
-          <GoogleLogin
-            onSuccess={handleLoginSuccess}
-            onError={() => console.log('Login Failed')}
+    <nav className="flex justify-between items-center px-6 py-4 border-b border-gray-300">
+      {/* Logo section */}
+      <Link to="/" className="flex items-center gap-3 hover:opacity-80 transition">
+        <img src={logo} className="h-10 w-10 object-contain" alt="Bloom Logo" />
+        <span className="text-2xl font-semibold text-forest">Bloom</span>
+      </Link>
+
+      {/* User info */}
+      {user && (
+        <div className="flex items-center gap-3">
+          <img
+            src={user.picture}
+            alt="profile"
+            className="w-10 h-10 rounded-full object-cover"
           />
-        )}
-      </div>
+          <span className="font-sans text-forest">{user.name}</span>
+          <button
+            onClick={handleLogout}
+            className="bg-forest text-beige px-4 py-2 rounded-xl hover:bg-green-900 transition"
+          >
+            Sign Out
+          </button>
+        </div>
+      )}
     </nav>
   );
 }

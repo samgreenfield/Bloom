@@ -2,7 +2,6 @@ import React from 'react';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { createRoot } from 'react-dom/client';
 import { ApolloProvider } from '@apollo/client/react';
-import { BrowserRouter } from 'react-router-dom';
 import client from './api/client';
 import App from './App';
 import './index.css';
@@ -13,9 +12,7 @@ createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
       <ApolloProvider client={client}>
-        <BrowserRouter>
-          <App />
-        </BrowserRouter>
+        <App />
       </ApolloProvider>
     </GoogleOAuthProvider>
   </React.StrictMode>

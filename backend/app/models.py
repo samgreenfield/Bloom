@@ -1,12 +1,17 @@
-from sqlmodel import SQLModel, Field, Relationship
+from sqlmodel import SQLModel, Field, Relationship, Column, JSON
 from typing import Optional, List
 from datetime import datetime, UTC
+import random
+import string
 
 class User(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
+    google_sub: str = Field(index=True, unique=True)
     name: str
     email: str
+    picture: Optional[str] = None
     role: str = "student"
+    classCodes: List[str] = Field(default_factory=list, sa_column=Column(JSON))
 
     responses: List["Response"] = Relationship(back_populates="user")
 
@@ -40,3 +45,12 @@ class Response(SQLModel, table=True):
 
     user: Optional[User] = Relationship(back_populates="responses")
     question: Optional[Question] = Relationship(back_populates="responses")
+
+def generate_class_code(length: int = 8) -> str:
+    return "".join(random.choices(string.ascii_uppercase + string.digits, k=length))
+
+class Class(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    name: str
+    code: str = Field(default_factory=generate_class_code)
+    teacher_id: int = Field(foreign_key="user.id")
