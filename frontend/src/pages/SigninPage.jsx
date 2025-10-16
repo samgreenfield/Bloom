@@ -1,8 +1,9 @@
+import React from "react";
 import { useEffect, useState } from "react";
-import { GoogleLogin } from "@react-oauth/google";
+import * as ReactOAuth from '@react-oauth/google';
 import { jwtDecode } from "jwt-decode";
 import { gql } from "@apollo/client";
-import { useMutation } from "@apollo/client/react";
+import { useMutation, useLazyQuery } from "@apollo/client/react";
 import Navbar from "../components/Navbar";
 
 const CREATE_OR_UPDATE_USER = gql`
@@ -12,7 +13,6 @@ const CREATE_OR_UPDATE_USER = gql`
     $email: String!
     $picture: String
     $role: String!
-    $classCode: String
   ) {
     createOrUpdateUser(
       googleSub: $googleSub
@@ -20,28 +20,49 @@ const CREATE_OR_UPDATE_USER = gql`
       email: $email
       picture: $picture
       role: $role
-      classCode: $classCode
     ) {
       id
       name
       email
       role
-      classCodes
     }
   }
 `;
 
-export default function QuestionnairePage() {
+const GET_USER_BY_GOOGLE_SUB = gql`
+  query GetUserByGoogleSub($googleSub: String!) {
+    userByGoogleSub(googleSub: $googleSub) {
+      id
+      name
+      email
+      role
+    }
+  }
+`;
+
+const JOIN_CLASS = gql`
+  mutation JoinClass($userId: Int!, $classCode: String!) {
+    joinClass(userId: $userId, classCode: $classCode) {
+      id
+      name
+      code
+    }
+  }
+`;
+
+export default function SigninPage() {
   const [step, setStep] = useState(1);
   const [role, setRole] = useState("");
   const [classCode, setClassCode] = useState("");
   const [createOrUpdateUser] = useMutation(CREATE_OR_UPDATE_USER);
+  const [getUserByGoogleSub] = useLazyQuery(GET_USER_BY_GOOGLE_SUB);
+  const [joinClass] = useMutation(JOIN_CLASS);
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
       const user = JSON.parse(storedUser);
-      window.location.href = dashboard;
+      window.location.href = "/dashboard";
     }
   }, []);
 
@@ -67,31 +88,14 @@ export default function QuestionnairePage() {
       const decoded = jwtDecode(credentialResponse.credential);
       const googleSub = decoded.sub;
 
-      const query = `
-        query GetUserByGoogleSub($googleSub: String!) {
-          userByGoogleSub(googleSub: $googleSub) {
-            id
-            name
-            email
-            role
-            classCode
-          }
+
+      const {body} = await getUserByGoogleSub({
+        variables: {
+          googleSub: googleSub
         }
-      `;
+      })
 
-      const body = JSON.stringify({
-        query,
-        variables: { googleSub },
-      });
-
-      const res = await fetch("/graphql", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body,
-      });
-
-      const json = await res.json();
-      const existingUser = json.data?.userByGoogleSub;
+      const existingUser = body?.userByGoogleSub;
 
       if (existingUser) {
         const dashboard = "/dashboard"
@@ -105,12 +109,25 @@ export default function QuestionnairePage() {
           name: decoded.name,
           email: decoded.email,
           picture: decoded.picture,
-          role,
-          classCode,
+          role
         },
       });
 
       const user = data.createOrUpdateUser;
+
+      if (classCode && role === "student") {
+        try {
+          await joinClass({
+            variables: {
+              userId: user.id,
+              classCode: classCode,
+            },
+          });
+        } catch (err) {
+          console.error("Failed to join class:", err);
+        }
+      }
+
       localStorage.setItem("user", JSON.stringify(user));
       const dashboard = "/dashboard";
       window.location.href = dashboard;
@@ -160,7 +177,7 @@ export default function QuestionnairePage() {
                 onClick={() => setStep(3)}
                 className="text-sm text-forest underline hover:text-black transition"
               >
-                Already using Bloom? Sign in
+                Already using Bloom? Sign in here.
               </button>
             </>
           )}
@@ -196,7 +213,7 @@ export default function QuestionnairePage() {
               <h2 className="text-3xl font-serif text-forest mb-6">
                 Log in to start growing.
               </h2>
-              <GoogleLogin
+              <ReactOAuth.GoogleLogin
                 onSuccess={handleGoogleSuccess}
                 onError={handleGoogleError}
               />

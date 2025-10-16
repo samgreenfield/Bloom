@@ -36,7 +36,7 @@ export default function DashboardPage() {
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (!storedUser) {
-      window.location.href = "/questionnaire";
+      window.location.href = "/signin";
       return;
     }
     setUser(JSON.parse(storedUser));

@@ -22,7 +22,7 @@ export default function Navbar() {
       {/* Logo section */}
       <Link to="/" className="flex items-center gap-3 hover:opacity-80 transition">
         <img src={logo} className="h-10 w-10 object-contain" alt="Bloom Logo" />
-        <span className="text-2xl font-semibold text-forest">Bloom</span>
+        <span className="text-2xl font-serif text-forest">Bloom</span>
       </Link>
 
       {/* User info */}

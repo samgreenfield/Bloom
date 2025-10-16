@@ -7,7 +7,7 @@ import tailwindcss from '@tailwindcss/vite'
 export default defineConfig({
   plugins: [react(), commonjs(), tailwindcss()],
   optimizeDeps: {
-    include: ['@react-oauth/google', 'jwt-decode']
+    include: ['@react-oauth/google', 'jwt-decode', 'react', 'react-dom']
   },
   server: {
     proxy: {

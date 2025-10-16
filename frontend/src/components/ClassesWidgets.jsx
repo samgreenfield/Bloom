@@ -16,8 +16,10 @@ const GET_CLASSES_FOR_USER = gql`
 
 export default function ClassesWidget({ userId }) {
   const navigate = useNavigate();
+  
   const { data, loading, error } = useQuery(GET_CLASSES_FOR_USER, {
     variables: { userId },
+    fetchPolicy: "network-only",
   });
 
   if (loading) return <p>Loading classes...</p>;
@@ -25,7 +27,7 @@ export default function ClassesWidget({ userId }) {
 
   const classes = data?.classesForUser || [];
 
-  if (!classes.length) return <p>No classes yet.</p>;
+  if (!classes.length) return <p></p>;
 
   return (
     <div className="w-full flex justify-center px-20">
