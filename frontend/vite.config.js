@@ -5,16 +5,15 @@ import tailwindcss from '@tailwindcss/vite'
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react(), commonjs(), tailwindcss()],
-  optimizeDeps: {
-    include: ['@react-oauth/google', 'jwt-decode', 'react', 'react-dom']
-  },
-  server: {
-    proxy: {
-      "/graphql": {
-        target: "http://localhost:8000",
-        changeOrigin: true,
-      }
-    }
-  }
+  // plugins: [react(), commonjs(), tailwindcss()],
+  // optimizeDeps: {
+  //   include: 'node_modules/**'
+  // },
+  // // build: {
+  // //   rollupOptions: {
+  // //     external: [
+  // //       '@react-oauth/google' // Add the problematic package here
+  // //     ]
+  // //   }
+  // // }
 })
