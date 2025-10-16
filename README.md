@@ -7,7 +7,7 @@ Bloom is a modern, open-source educational platform designed to help teachers cr
 ## Features
 
 **For Teachers:**
-- Create, edit, and delete lessons and questions  
+- Create, edit, and delete classes, lessons and questions  
 - View students’ progress and scores  
 - Preview quizzes as students  
 
