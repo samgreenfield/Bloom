@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from strawberry.fastapi import GraphQLRouter
 from .schema import schema
 
-origins = ["http://localhost:5173", "http://127.0.0.1:5173"]
+origins = ["https://bloomlms.netlify.app"]
 
 app = FastAPI(title="Bloom API")
 
