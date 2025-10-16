@@ -1,4 +1,4 @@
-# Bloom 🌱
+# Bloom
 
 ![Landing Page](.screenshots/landing.png)
 
