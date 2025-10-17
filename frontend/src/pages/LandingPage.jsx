@@ -37,6 +37,12 @@ export default function LandingPage() {
                 {/* &copy; {new Date().getFullYear()} Bloom. All rights reserved. */}
             </p>
             <div className="flex gap-4 text-lg">
+                <button
+                    onClick={() => navigate("/demo")}
+                    className="bg-forest text-beige px-6 py-3 rounded-xl hover:bg-green-900 transition"
+                    >
+                    Try Demo
+                </button>
                 <a
                 href="mailto:samgreenfield0@gmail.com"
                 className="hover:underline"
