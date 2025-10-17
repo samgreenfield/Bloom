@@ -236,7 +236,7 @@ export default function ClassPage() {
         {isTeacher && (
             <StudentsList students={students} onRemoveStudent={handleRemoveStudent} />
         )}
-        {!(user.id===2) &
+        {!(user.id===2) &&
         <ClassFooter 
             isTeacher={isTeacher}
             onDeleteClass={handleDeleteClass}
