@@ -1,35 +1,8 @@
 import { useEffect } from "react";
-import { useMutation } from "@apollo/client/react";
 import { useNavigate } from "react-router-dom";
-import { gql } from "@apollo/client";
-
-
-const JOIN_CLASS = gql`
-  mutation JoinClass($userId: Int!, $classCode: String!) {
-    joinClass(userId: $userId, classCode: $classCode) {
-      id
-      name
-      code
-    }
-  }
-`;
-
-const joinClass = async (e) => {
-    e.preventDefault();
-
-    try {
-      await joinClass({
-        variables: {userId: 2, classCode: "RA5ONSOQ"},
-      });
-      window.location.reload();
-    } catch (err) {
-      console.error("Error joining class:", err);
-    }
-  };
 
 export default function DemoLogin() {
   const navigate = useNavigate();
-  const [joinClass] = useMutation(JOIN_CLASS);
 
   useEffect(() => {
     const demoUser = {
@@ -40,11 +13,9 @@ export default function DemoLogin() {
       google_sub: "DEMOUSER",
     };
 
-    joinClass();
-
   localStorage.setItem("user", JSON.stringify(demoUser));
 
-    navigate("/dashboard");
+    navigate("/class/RA5ONSOQ/lesson/GV93399Y");
   }, [navigate]);
 
   return (
