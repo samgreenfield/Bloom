@@ -4,6 +4,7 @@ import SigninPage from "./pages/SigninPage";
 import DashboardPage from './pages/DashboardPage';
 import ClassPage from './pages/ClassPage';
 import LessonPage from './pages/LessonPage';
+import DemoLogin from "./pages/DemoLogin";
 
 export default function App() {
   return (
