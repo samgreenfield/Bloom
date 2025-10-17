@@ -1,11 +1,21 @@
-import { useEffect } from "react";
+import { useEffect, useMutation } from "react";
 import { useNavigate } from "react-router-dom";
+
+const JOIN_CLASS = gql`
+  mutation JoinClass($userId: Int!, $classCode: String!) {
+    joinClass(userId: $userId, classCode: $classCode) {
+      id
+      name
+      code
+    }
+  }
+`;
 
 export default function DemoLogin() {
   const navigate = useNavigate();
+  const [joinClass] = useMutation(JOIN_CLASS);
 
   useEffect(() => {
-    // Define a fake "demo" user
     const demoUser = {
       id: 2,
       name: "DEMO USER",
@@ -14,10 +24,12 @@ export default function DemoLogin() {
       google_sub: "DEMOUSER",
     };
 
-    // Save to localStorage so the app treats this user as signed in
-    localStorage.setItem("user", JSON.stringify(demoUser));
+  joinClass({
+        variables: { userId: 2, classCode: "RA5ONSOQ" },
+  }); 
 
-    // Redirect to dashboard
+  localStorage.setItem("user", JSON.stringify(demoUser));
+
     navigate("/dashboard");
   }, [navigate]);
 
