@@ -1,5 +1,7 @@
 import { useEffect, useMutation } from "react";
 import { useNavigate } from "react-router-dom";
+import { gql } from "@apollo/client";
+
 
 const JOIN_CLASS = gql`
   mutation JoinClass($userId: Int!, $classCode: String!) {
