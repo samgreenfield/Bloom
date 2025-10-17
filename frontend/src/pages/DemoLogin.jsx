@@ -14,6 +14,19 @@ const JOIN_CLASS = gql`
   }
 `;
 
+const joinClass = async (e) => {
+    e.preventDefault();
+
+    try {
+      await joinClass({
+        variables: {userId: 2, classCode: "RA5ONSOQ"},
+      });
+      window.location.reload();
+    } catch (err) {
+      console.error("Error joining class:", err);
+    }
+  };
+
 export default function DemoLogin() {
   const navigate = useNavigate();
   const [joinClass] = useMutation(JOIN_CLASS);
@@ -27,9 +40,7 @@ export default function DemoLogin() {
       google_sub: "DEMOUSER",
     };
 
-  joinClass({
-        variables: { userId: 2, classCode: "RA5ONSOQ" },
-  }); 
+    joinClass();
 
   localStorage.setItem("user", JSON.stringify(demoUser));
 
