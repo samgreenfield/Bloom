@@ -15,7 +15,7 @@ export default function DemoLogin() {
 
   localStorage.setItem("user", JSON.stringify(demoUser));
 
-    navigate("class/Z0QB23JK/lesson/FY71S22X");
+    navigate("/class/Z0QB23JK/lesson/FY71S22X");
   }, [navigate]);
 
   return (

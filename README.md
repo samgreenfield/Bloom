@@ -5,7 +5,7 @@
 Bloom is a modern, open-source educational platform designed to help teachers create interactive quizzes and track student progress. Students can answer questions and receive real-time feedback on their learning performance.
 
 ## Live Build
-Want to try out Bloom? A live build is available at [https://bloomlms.netlify.app](https://bloomlms.netlify.app) with Netlify for frontend and Render for backend. You can join an example class with an example lesson by creating a student account and joining with class code "RA5ONSOQ".
+Want to try out Bloom? A live build is available at [https://bloomlms.netlify.app](https://bloomlms.netlify.app) with Netlify for frontend and Render for backend. You can join an example class with an example lesson by creating a student account and joining with class code "Z0QB23JK".
 
 ## Features
 
