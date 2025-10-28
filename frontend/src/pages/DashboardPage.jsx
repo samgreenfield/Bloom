@@ -4,7 +4,17 @@ import ClassesWidget from "../components/ClassesWidgets";
 import { gql } from "@apollo/client";
 import { useMutation } from "@apollo/client/react";
 
-// Teacher: create class
+{/* 
+  DASHBOARDPAGE.JSX:
+  The component for /dashboard
+    - Allows users to create/join classes
+    - Displays:
+      - Navbar
+      - ClassesWidget
+      - UI to create or join a class
+*/}
+
+// GraphQL mutation to create a class
 const CREATE_CLASS = gql`
   mutation CreateClass($name: String!, $teacherId: Int!) {
     createClass(name: $name, teacherId: $teacherId) {
@@ -15,7 +25,7 @@ const CREATE_CLASS = gql`
   }
 `;
 
-// Student: join class by code
+// GraphQL mutation to add a student to a class
 const JOIN_CLASS = gql`
   mutation JoinClass($userId: Int!, $classCode: String!) {
     joinClass(userId: $userId, classCode: $classCode) {
@@ -33,18 +43,21 @@ export default function DashboardPage() {
   const [createClass] = useMutation(CREATE_CLASS);
   const [joinClass] = useMutation(JOIN_CLASS);
 
+  // Confirm user is signed in
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
+    // If not signed in, go to the signin page
     if (!storedUser) {
       window.location.href = "/signin";
       return;
     }
+    // Otherwise, set user = a User type
     setUser(JSON.parse(storedUser));
   }, []);
 
   if (!user) return null;
 
-  // Teacher: handle class creation
+  // Function to create a class on button press
   const handleCreateClass = async (e) => {
     e.preventDefault();
     if (!newClassName) return;
@@ -60,7 +73,7 @@ export default function DashboardPage() {
     }
   };
 
-  // Student: handle joining a class
+  // Function to join a class on button press
   const handleJoinClass = async (e) => {
     e.preventDefault();
     if (!joinCode) return;
@@ -92,7 +105,7 @@ export default function DashboardPage() {
           <ClassesWidget userId={user.id} />
         </div>
 
-        {/* Teacher: Create Class */}
+        {/* Show create class if the user is a teacher */}
         {user.role === "teacher" && (
           <div className="bg-white rounded-3xl shadow-md p-6 w-full max-w-md flex flex-col items-center gap-4">
             <h3 className="text-xl font-serif text-forest">Create a New Class</h3>
@@ -117,7 +130,7 @@ export default function DashboardPage() {
           </div>
         )}
 
-        {/* Student: Join Class */}
+        {/* Show join class if the user is a student */}
         {user.role === "student" && (
           <div className="bg-white rounded-3xl shadow-md p-6 w-full max-w-md flex flex-col items-center gap-4">
             <h3 className="text-xl font-serif text-forest">Join a Class</h3>

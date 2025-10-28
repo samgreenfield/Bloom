@@ -6,6 +6,18 @@ import { gql } from "@apollo/client";
 import { useMutation, useLazyQuery } from "@apollo/client/react";
 import Navbar from "../components/Navbar";
 
+{/* 
+  SIGNINPAGE.JSX:
+  The component for /signin displays:
+    - NavBar
+    - Signin form:
+      - Teachers --> Google OAuth --> Add user
+      - Students --> Class code (optional) --> Google OAuth --> Add user
+      - Previously registered users --> Google OAuth (only name, email, picture are updated)
+*/}
+
+
+// GraphQL mutation to create or update a user
 const CREATE_OR_UPDATE_USER = gql`
   mutation CreateOrUpdateUser(
     $googleSub: String!
@@ -29,6 +41,7 @@ const CREATE_OR_UPDATE_USER = gql`
   }
 `;
 
+// GraphQL mutation to get a User type from the user's Google id
 const GET_USER_BY_GOOGLE_SUB = gql`
   query GetUserByGoogleSub($googleSub: String!) {
     userByGoogleSub(googleSub: $googleSub) {
@@ -40,6 +53,7 @@ const GET_USER_BY_GOOGLE_SUB = gql`
   }
 `;
 
+// GraphQL mutation to add a student to a class
 const JOIN_CLASS = gql`
   mutation JoinClass($userId: Int!, $classCode: String!) {
     joinClass(userId: $userId, classCode: $classCode) {
@@ -58,27 +72,36 @@ export default function SigninPage() {
   const [getUserByGoogleSub] = useLazyQuery(GET_USER_BY_GOOGLE_SUB);
   const [joinClass] = useMutation(JOIN_CLASS);
 
+  // Check if there is already a user signed in
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
+      // If there is a user, navigate to dashboard
       const user = JSON.parse(storedUser);
       window.location.href = "/dashboard";
     }
   }, []);
 
-  // Handlers (temporary placeholders)
+  // Function to determine whether to ask for a class code
   const handleRoleSelect = (selectedRole) => {
     setRole(selectedRole);
+    // Teachers skip to step 3
     if (selectedRole === "teacher") setStep(3);
+    // Students move to step 2
     else setStep(2);
   };
 
+  // Function to handle submission of an optional class code on register
   const handleClassSubmit = (e) => {
+    // Don't reload page, keep the class
     e.preventDefault();
+    // Send students to step 3
     setStep(3);
   };
 
+  // Function to sign in a user if OAuth succeeds
   const handleGoogleSuccess = async (credentialResponse) => {
+    // Sanity check for credential response
     if (!credentialResponse.credential) {
       console.error("No credential found in response.");
       return;
@@ -88,7 +111,7 @@ export default function SigninPage() {
       const decoded = jwtDecode(credentialResponse.credential);
       const googleSub = decoded.sub;
 
-
+      // Set body.userByGoogleSub = a User type if the user was already registered
       const {body} = await getUserByGoogleSub({
         variables: {
           googleSub: googleSub
@@ -97,12 +120,14 @@ export default function SigninPage() {
 
       const existingUser = body?.userByGoogleSub;
 
+      // If the user was already registered, navigate to dashboard
       if (existingUser) {
         const dashboard = "/dashboard"
         window.location.href = dashboard;
         return;
       }
 
+      // For new users, create a new user in the db
       const {data} = await createOrUpdateUser({
         variables: {
           googleSub,
@@ -113,8 +138,10 @@ export default function SigninPage() {
         },
       });
 
+      // Set user = the new User type
       const user = data.createOrUpdateUser;
 
+      // If a classcode was given, add the student to that class
       if (classCode && role === "student") {
         try {
           await joinClass({
@@ -128,6 +155,7 @@ export default function SigninPage() {
         }
       }
 
+      // Set local user to be the user, navigate to dashboard
       localStorage.setItem("user", JSON.stringify(user));
       const dashboard = "/dashboard";
       window.location.href = dashboard;
@@ -148,9 +176,9 @@ export default function SigninPage() {
         <Navbar />
       </div>
 
-      {/* Centered content */}
       <div className="flex-grow flex items-center justify-center px-6 pt-16">
         <div className="bg-white rounded-3xl shadow-md p-10 w-full max-w-md text-center flex flex-col items-center">
+          {/* On step 1, ask if teacher or student */}
           {step === 1 && (
             <>
               <h2 className="text-3xl font-serif text-forest mb-6">
@@ -182,6 +210,7 @@ export default function SigninPage() {
             </>
           )}
 
+          {/* On step 2, students can submit an optional class code to join on registration */}
           {step === 2 && (
             <>
               <h2 className="text-3xl font-serif text-forest mb-6">
@@ -208,6 +237,7 @@ export default function SigninPage() {
             </>
           )}
 
+          {/* On step 3, users use Google OAuth to sign in */}
           {step === 3 && (
             <>
               <h2 className="text-3xl font-serif text-forest mb-6">

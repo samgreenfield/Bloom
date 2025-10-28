@@ -1,7 +1,13 @@
-import React from "react";
 import { gql } from "@apollo/client";
 import { useQuery } from "@apollo/client/react";
 import { useNavigate } from "react-router-dom";
+
+{/* 
+  FILENAME.JSX:
+  Text about what the following categories are:
+    - Category 1
+    - Category 2
+*/}
 
 // GraphQL query to fetch all classes for a user by user ID
 const GET_CLASSES_FOR_USER = gql`

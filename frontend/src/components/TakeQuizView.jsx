@@ -2,6 +2,16 @@ import { useState, useEffect } from "react";
 import { gql } from "@apollo/client";
 import { useMutation } from "@apollo/client/react";
 
+{/* 
+  TAKEQUIZVIEW.JSX:
+  The component for taking a quiz (lesson)
+    - Takes questions, user, lessonId, onExit as argument
+    - Displays:
+      - Each question in order with answer choices shuffled
+      - Continue/Finish button depending on if the question is the last question
+*/}
+
+// GraphQL mutation to add a score to a lesson for a student
 const SUBMIT_SCORE = gql`
   mutation SubmitLessonScore($lessonId: String!, $userId: Int!, $score: Float!) {
     submitLessonScore(lessonId: $lessonId, userId: $userId, score: $score) {
@@ -24,27 +34,32 @@ export default function TakeQuizView({ questions, user, lessonId, onExit }) {
     return <p>No questions yet!</p>
   }
 
-  // Shuffle answers once per question
+  // Shuffle answers once per question and don't retain answer choice from last question
   useEffect(() => {
     if (!currentQuestion) return;
     const allAnswers = [...currentQuestion.wrongAnswers, currentQuestion.correctAnswer];
+    // Negatives go before, positives go after --> need -0.5 to determine order
     setShuffledAnswers(allAnswers.sort(() => Math.random() - 0.5));
     setSelectedAnswer("");
   }, [currentQuestionIndex, currentQuestion]);
 
+  // Update score on next question, go to next question or submit a score if quiz is over (for students)
   const handleNext = () => {
     // Update score if student selected the correct answer
     if (selectedAnswer === currentQuestion.correctAnswer) {
       setScore((prev) => prev + 1);
     }
 
+    // Increment currentQuestionIndex if there's a next question
     if (currentQuestionIndex + 1 < questions.length) {
       setCurrentQuestionIndex((prev) => prev + 1);
     } else {
       // Quiz finished
       setFinished(true);
-      if (user.role === "student") {
-        const percentScore = ((score + (selectedAnswer === currentQuestion.correctAnswer ? 1 : 0)) / questions.length) * 100;
+      // Add last question's answer to the score
+      const percentScore = ((score + (selectedAnswer === currentQuestion.correctAnswer ? 1 : 0)) / questions.length) * 100;
+      // Submit score if user is a student
+      if (user?.role === "student") {
         submitScore({
           variables: { lessonId, userId: user.id, score: percentScore },
         }).catch((err) => console.error("Failed to submit score:", err));
@@ -52,7 +67,9 @@ export default function TakeQuizView({ questions, user, lessonId, onExit }) {
     }
   };
 
+  // If the quiz is finished, show score
   if (finished && score) {
+    // Calculate percentage for score bar
     const percentScore = (score / questions.length) * 100;
     return (
       <div className="p-6 max-w-md w-full bg-white rounded-xl shadow flex flex-col items-center">
@@ -64,6 +81,7 @@ export default function TakeQuizView({ questions, user, lessonId, onExit }) {
                 style={{ width: `${percentScore}%` }}
             />
         </div>
+        {/* Exit button calls onExit function from argument to TakeQuizView */}
         <button
           onClick={onExit}
           className="bg-forest text-beige px-6 py-2 rounded-xl hover:bg-green-900 transition"
@@ -74,10 +92,12 @@ export default function TakeQuizView({ questions, user, lessonId, onExit }) {
     );
   }
 
+  // Main screen
   return (
     <div className="p-6 max-w-md w-full bg-white rounded-xl shadow flex flex-col items-center gap-4">
       <h2 className="text-xl font-semibold">{currentQuestion.title}</h2>
       <div className="flex flex-col gap-2 w-full">
+        {/* Show shuffled answers with green-border selection */}
         {shuffledAnswers.map((answer, idx) => (
           <button
             key={idx}
@@ -90,6 +110,7 @@ export default function TakeQuizView({ questions, user, lessonId, onExit }) {
         ))}
       </div>
 
+      {/* Button to go to next question (or finish quiz) */}
       <button
         onClick={handleNext}
         disabled={!selectedAnswer}

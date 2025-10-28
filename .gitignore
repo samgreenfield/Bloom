@@ -1,1 +1,6 @@
 backend/bloom.db
+.vite
+backend/.venv
+backend/.vscode
+frontend/node_modules
+backend/app/__pycache__

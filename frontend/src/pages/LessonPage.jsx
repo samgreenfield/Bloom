@@ -7,6 +7,18 @@ import QuestionsList from "../components/QuestionsList";
 import CreateQuestionForm from "../components/CreateQuestionForm";
 import TakeQuizView from "../components/TakeQuizView";
 
+{/* 
+  LESSONPAGE.JSX:
+  The component for pages at /class/CLASSID/lesson/LESSONID displays:
+    - NavBar
+    - For students: TakeQuizView
+    - For teachers:
+      - QuestionsList
+      - Create Question button (displays CreateQuestionForm)
+      - Preview as Student button (displays TakeQuizView)
+*/}
+
+// GraphQL query for getting the lesson by lesson's id
 const GET_LESSON_BY_ID = gql`
   query GetLessonById($lessonId: String!) {
     lessonById(lessonId: $lessonId) {
@@ -22,6 +34,7 @@ const GET_LESSON_BY_ID = gql`
   }
 `;
 
+// GraphQL mutation for deleting a question from a lesson
 const DELETE_QUESTION = gql`
   mutation DeleteQuestion($questionId: Int!) {
     deleteQuestion(questionId: $questionId)
@@ -38,11 +51,13 @@ export default function LessonPage() {
   const [editingQuestion, setEditingQuestion] = useState(null);
   const [showEditForm, setShowEditForm] = useState(false);
 
+  // Set data.lessonById = a Lesson type
   const { data, loading, error, refetch } = useQuery(GET_LESSON_BY_ID, {
     variables: { lessonId: lessonId},
     fetchPolicy: "network-only",
   });
 
+  // Function to delete a question from a lesson
   const handleDeleteQuestion = async (questionId) => {
     try {
       await deleteQuestion({ variables: { questionId } });
@@ -52,12 +67,19 @@ export default function LessonPage() {
     }
   };
 
+  // Confirm user is signed in
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
-    if (!storedUser) navigate("/signin");
-    else setUser(JSON.parse(storedUser));
+    // If not signed in, go to the signin page
+    if (!storedUser) {
+      navigate("/signin");
+      return;
+    }
+    // Otherwise, set user = a User type
+    setUser(JSON.parse(storedUser));
   }, [navigate]);
 
+  // Loading and error messages
   if (loading || !user) return <div>Loading...</div>;
   if (error){
     console.log(error)
@@ -69,13 +91,14 @@ export default function LessonPage() {
 
   return (
     <div className="min-h-screen bg-beige flex flex-col items-center">
+      {/* Show Navbar */}
       <div className="w-full fixed top-0 left-0 z-10">
         <Navbar />
       </div>
 
       <div className="pt-24 w-full max-w-3xl flex flex-col items-center gap-6 px-4">
         <h1 className="text-3xl font-serif text-forest">{lesson.title}</h1>
-
+        {/* If the user is a teacher (and not testing the lesson), show QuestionsList */}
         {isTeacher && !viewAsStudent && (
           <>
             <QuestionsList
@@ -85,21 +108,24 @@ export default function LessonPage() {
               onEditQuestion={(q) => {
                 setEditingQuestion(q);
                 setShowEditForm(true);
-            }}
+              }}
             />
+            {/* Button to create a question */}
             <button
               onClick={() => setShowCreateForm(true)}
               className="bg-forest text-beige px-6 py-3 rounded-xl hover:bg-green-900 transition"
             >
               + Create Question
             </button>
+            {/* Button to view as a student (test lesson) */}
             <button
               onClick={() => setViewAsStudent(true)}
               className="text-sm text-forest underline hover:text-black mt-2"
             >
               Preview as Student
             </button>
-
+            
+            {/* On show create form, show CreateQuestionForm */}
             {showCreateForm && (
               <div className="fixed inset-0 z-50 flex justify-center items-center backdrop-blur-sm bg-black/30">
                 <CreateQuestionForm
@@ -110,6 +136,7 @@ export default function LessonPage() {
               </div>
             )}
 
+            {/* If editing a question, show CreateQuestionForm with data from the question being edited */}
             {showEditForm && editingQuestion && (
               <CreateQuestionForm
                 isEditing
@@ -121,6 +148,7 @@ export default function LessonPage() {
           </>
         )}
 
+        {/* If a teacher wants to test the lesson, show TakeQuizView */}
         {isTeacher && viewAsStudent && (
           <>
             <TakeQuizView
@@ -130,16 +158,9 @@ export default function LessonPage() {
           </>
         )}
 
+        {/* If user is a student (not isTeacher), show TakeQuizView */}
         {!isTeacher && <TakeQuizView questions={lesson.questions} user={user} lessonId={lesson.id} onExit={() => navigate(`/class/${code}`)} />}
       </div>
-
-      {showCreateForm && (
-        <CreateQuestionForm
-          lessonId={lesson.id}
-          onClose={() => setShowCreateForm(false)}
-          onCreated={refetch}
-        />
-      )}
     </div>
   );
 }

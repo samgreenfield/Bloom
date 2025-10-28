@@ -6,6 +6,8 @@ import ClassPage from './pages/ClassPage';
 import LessonPage from './pages/LessonPage';
 import DemoLogin from "./pages/DemoLogin";
 
+
+// Route to various pages based on the URL
 export default function App() {
   return (
     <Router>

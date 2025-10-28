@@ -1,4 +1,3 @@
-import React from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 export default function LessonsList({ lessons, user_id, isTeacher, onDeleteLesson, numStudents }) {
@@ -32,7 +31,7 @@ export default function LessonsList({ lessons, user_id, isTeacher, onDeleteLesso
                 <p className="text-sm text-gray-500">
                   Completed by{" "}
                   <span className="font-medium text-forest">
-                    {lesson.scores.length ?? 0}/{numStudents ?? 0}
+                    {lesson.scores?.length ?? 0}/{numStudents ?? 0}
                   </span>{" "}
                   students. Average grade:{" "}
                   <span className="font-medium text-forest">
