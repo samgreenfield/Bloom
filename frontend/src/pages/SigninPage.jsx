@@ -16,6 +16,7 @@ import Navbar from "../components/Navbar";
       - Previously registered users --> Google OAuth (only name, email, picture are updated)
 */}
 
+// NOTE: NEED TO ADD FEATURE REQUIRING NEW USERS TO REGISTER BEFORE SIGNING IN (TO GET A ROLE)
 
 // GraphQL mutation to create or update a user
 const CREATE_OR_UPDATE_USER = gql`

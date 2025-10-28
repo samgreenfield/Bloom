@@ -1,4 +1,10 @@
-import React from "react";
+{/* 
+  STUDENTSLIST.JSX:
+  The component listing students in a class displays:
+    - Each student in the class
+    - Remove student buttons
+    - (NOTE: ADD GRADE IN CLASS)
+*/}
 
 export default function StudentsList({ students, onRemoveStudent }) {
   if (!students || students.length === 0) return <div>No students enrolled yet.</div>;
@@ -7,6 +13,7 @@ export default function StudentsList({ students, onRemoveStudent }) {
     <div className="w-full max-w-4xl bg-white rounded-xl shadow-md p-4 flex flex-col gap-3">
       <h3 className="text-xl font-semibold mb-2">Enrolled Students</h3>
       <ul className="flex flex-col gap-2">
+        {/* For each student, display a box with their name and a remove button */}
         {students.map((student) => (
           <li
             key={student.id}

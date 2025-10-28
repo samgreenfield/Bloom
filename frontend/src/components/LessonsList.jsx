@@ -1,13 +1,27 @@
 import { useNavigate, useParams } from "react-router-dom";
 
+{/* 
+  LESSONSLIST.JSX:
+  The component listing lessons in a class displays:
+    - Each lesson in the class
+      - Lesson name
+      - For students: their current grade on the lesson
+      - For teachers:
+        - Number of students who have completed the question
+        - Average grade for the lesson
+        - Button to delete the lesson
+*/}
+
 export default function LessonsList({ lessons, user_id, isTeacher, onDeleteLesson, numStudents }) {
   const navigate = useNavigate();
   const { code } = useParams();
 
+  // Function to navigate to a lesson when clicked
   const handleLessonClick = (lessonId) => {
     navigate(`/class/${code}/lesson/${lessonId}`);
   };
 
+  // Function to calculate the average score for a lesson
   const calculateAverage = (scores) => {
     if (!scores || scores.length === 0) return null;
     const total = scores.reduce((sum, s) => sum + s.score, 0);
@@ -18,6 +32,7 @@ export default function LessonsList({ lessons, user_id, isTeacher, onDeleteLesso
     <div className="lessons-list mt-6 w-full">
       <h2 className="text-xl font-semibold mb-4">Lessons</h2>
       <ul className="space-y-3">
+        {/* For each lesson, show the box with its information */}
         {lessons.map((lesson) => (
           <li
             key={lesson.id}
@@ -26,8 +41,8 @@ export default function LessonsList({ lessons, user_id, isTeacher, onDeleteLesso
           >
             <div>
               <p className="font-medium">{lesson.title}</p>
-
               {isTeacher ? (
+                // Teachers see completion ratio and average grade
                 <p className="text-sm text-gray-500">
                   Completed by{" "}
                   <span className="font-medium text-forest">
@@ -39,6 +54,7 @@ export default function LessonsList({ lessons, user_id, isTeacher, onDeleteLesso
                   </span>
                 </p>
               ) : (
+                // Students see their current grade
                 <p className="text-sm text-gray-500">
                   Current Grade:{" "}
                   <span className="font-medium text-forest">
@@ -47,7 +63,8 @@ export default function LessonsList({ lessons, user_id, isTeacher, onDeleteLesso
                 </p>
               )}
             </div>
-
+            
+            {/* Teachers see button to delete lesson */}
             {isTeacher && (
               <button
                 onClick={(e) => {

@@ -2,6 +2,16 @@ import { useState, useEffect } from "react";
 import { gql } from "@apollo/client";
 import { useMutation } from "@apollo/client/react";
 
+{/* 
+  CREATEQUESTIONFORM.JSX:
+  The form for creating or editing a question within a lesson displays:
+    - A field for the question title
+    - A field for the correct answer
+    - Three fields for incorrect answers
+    - Buttons for add/edit question, cancel 
+*/}
+
+// GraphQL mutation for adding a question to a lesson
 const ADD_QUESTION_TO_LESSON = gql`
   mutation AddQuestionToLesson(
     $lessonId: String!
@@ -21,6 +31,7 @@ const ADD_QUESTION_TO_LESSON = gql`
   }
 `;
 
+// GraphQL query for editing a question
 const UPDATE_QUESTION = gql`
   mutation UpdateQuestion(
     $questionId: Int!
@@ -50,6 +61,7 @@ export default function CreateQuestionForm({
   initialData = null,
   isEditing = false,
 }) {
+  // Default states for form fields
   const [title, setTitle] = useState("");
   const [correctAnswer, setCorrectAnswer] = useState("");
   const [wrongAnswers, setWrongAnswers] = useState(["", "", ""]);
@@ -57,6 +69,7 @@ export default function CreateQuestionForm({
   const [addQuestion] = useMutation(ADD_QUESTION_TO_LESSON);
   const [updateQuestion] = useMutation(UPDATE_QUESTION);
 
+  // If editing, set the fields with the question's current information
   useEffect(() => {
     if (initialData) {
       setTitle(initialData.title);
@@ -65,9 +78,11 @@ export default function CreateQuestionForm({
     }
   }, [initialData]);
 
+  // Function to add or edit a question based on the fields
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      // If editing, update question in db
       if (isEditing) {
         const { data } = await updateQuestion({
           variables: {
@@ -78,7 +93,9 @@ export default function CreateQuestionForm({
           },
         });
         onUpdated && onUpdated(data.updateQuestion);
-      } else {
+      } 
+      // If adding, add question to db
+      else {
         const { data } = await addQuestion({
           variables: { lessonId, title, correctAnswer, wrongAnswers },
         });
@@ -103,6 +120,7 @@ export default function CreateQuestionForm({
           {isEditing ? "Edit Question" : "Create Question"}
         </h2>
 
+        {/* Form with fields for question, answers */}
         <form onSubmit={handleSubmit} className="space-y-4">
           <input
             type="text"
@@ -120,6 +138,7 @@ export default function CreateQuestionForm({
             className="border border-gray-300 rounded-lg px-4 py-2 w-full"
           />
 
+          {/* Wrong answer fields */}
           {wrongAnswers.map((a, i) => (
             <input
               key={i}
@@ -135,6 +154,7 @@ export default function CreateQuestionForm({
             />
           ))}
 
+          {/* Submit and cancel buttons */}
           <div className="flex justify-end gap-3 mt-4">
             <button
               type="button"
@@ -155,94 +175,3 @@ export default function CreateQuestionForm({
     </div>
   );
 }
-
-
-// export default function CreateQuestionForm({ lessonId, onClose, onCreated }) {
-//   const [title, setTitle] = useState("");
-//   const [correctAnswer, setCorrectAnswer] = useState("");
-//   const [wrongAnswers, setWrongAnswers] = useState(["", "", ""]);
-
-//   const [addQuestion, { loading }] = useMutation(ADD_QUESTION_TO_LESSON);
-
-//   const handleSubmit = async (e) => {
-//     e.preventDefault();
-//     try {
-//       await addQuestion({
-//         variables: {
-//           lessonId,
-//           title,
-//           correctAnswer,
-//           wrongAnswers,
-//         },
-//       });
-//       onCreated(); // refresh lesson data
-//       onClose();
-//     } catch (err) {
-//       console.error("Failed to create question:", err);
-//     }
-//   };
-
-//   const handleWrongAnswerChange = (index, value) => {
-//     const updated = [...wrongAnswers];
-//     updated[index] = value;
-//     setWrongAnswers(updated);
-//   };
-
-//   return (
-//     <div className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-md relative">
-//       <form
-//         onSubmit={handleSubmit}
-//         className="bg-white p-6 rounded-xl shadow-lg w-full max-w-md flex flex-col gap-4"
-//       >
-//         <h2 className="text-xl font-semibold text-forest">New Question</h2>
-
-//         <input
-//           type="text"
-//           placeholder="Question title"
-//           value={title}
-//           onChange={(e) => setTitle(e.target.value)}
-//           className="border border-gray-300 rounded-xl px-3 py-2"
-//           required
-//         />
-
-//         <input
-//           type="text"
-//           placeholder="Correct answer"
-//           value={correctAnswer}
-//           onChange={(e) => setCorrectAnswer(e.target.value)}
-//           className="border border-gray-300 rounded-xl px-3 py-2"
-//           required
-//         />
-
-//         {wrongAnswers.map((wa, i) => (
-//           <input
-//             key={i}
-//             type="text"
-//             placeholder={`Wrong answer ${i + 1}`}
-//             value={wa}
-//             onChange={(e) => handleWrongAnswerChange(i, e.target.value)}
-//             className="border border-gray-300 rounded-xl px-3 py-2"
-//             required
-//           />
-//         ))}
-
-//         <div className="flex justify-between mt-2">
-//           <button
-//             type="button"
-//             onClick={onClose}
-//             className="bg-gray-300 text-black px-4 py-2 rounded-xl hover:bg-gray-400 transition"
-//           >
-//             Cancel
-//           </button>
-//           <button
-//             type="submit"
-//             disabled={loading}
-//             className="bg-forest text-beige px-4 py-2 rounded-xl hover:bg-green-900 transition"
-//           >
-//             {loading ? "Saving..." : "Create"}
-//           </button>
-//         </div>
-//       </form>
-//     </div>
-//   );
-// }

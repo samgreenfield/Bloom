@@ -1,18 +1,25 @@
-import React from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
+{/* 
+  QUESTIONSLIST.JSX:
+  The component listing questions in a lesson displays:
+    - Each question in the lesson
+    - The question's average accuracy (NOTE: NOT FUNCTIONAL- CURRENTLY SAYS "No responses yet")
+    - Edit and delete buttons
+*/}
+
 export default function QuestionsList({ questions, isTeacher, onDeleteQuestion, onEditQuestion }) {
-  const { code, lessonId } = useParams();
-  const navigate = useNavigate();
 
   return (
     <div className="questions-list w-full bg-white rounded-xl shadow p-6 mt-4">
       <h2 className="text-xl font-semibold mb-4 text-forest">Questions</h2>
 
+      {/* Display "no questions yet" if questions list is empty */}
       {questions.length === 0 ? (
         <p className="text-gray-500">No questions yet.</p>
       ) : (
         <ul className="space-y-3">
+          {/* For each question, show The questions title and correct_count (NOTE: NOT FUNCTIONAL) */}
           {questions.map((q) => (
             <li
               key={q.id}
@@ -26,7 +33,7 @@ export default function QuestionsList({ questions, isTeacher, onDeleteQuestion, 
                     : "No responses yet"}
                 </p>
               </div>
-
+              {/* Show edit and delete question buttons (NOTE: isTeacher check is redundant- fix and test) */}
               <div className="flex gap-2">
                 {isTeacher && (
                   <>

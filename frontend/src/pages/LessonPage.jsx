@@ -18,6 +18,8 @@ import TakeQuizView from "../components/TakeQuizView";
       - Preview as Student button (displays TakeQuizView)
 */}
 
+// NOTE: NEED TO ADD STUDENT LIST WITH GRADES
+
 // GraphQL query for getting the lesson by lesson's id
 const GET_LESSON_BY_ID = gql`
   query GetLessonById($lessonId: String!) {
