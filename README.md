@@ -38,34 +38,6 @@ Want to try out Bloom? A live build is available at [https://bloomlms.netlify.ap
 - **Backend:** Python, Strawberry GraphQL, SQLModel, SQLite  
 - **Authentication:** Google OAuth  
 
----
-
-## Installation
-
-Follow these steps to set up Bloom locally:
-
-### 1. Clone the repository
-```bash
-git clone https://github.com/your-username/bloom.git
-cd bloom
-```
-
-### 2. Set up the development server
-```bash 
-cd frontend
-npm install                         # Install dependencies
-npm run dev                         # Start the development server
-```
-
-### 3. Set up the backend
-```bash
-cd ../backend
-python -m venv venv                 # (Optional) Create a virtual environment
-source venv/bin/activate            # Activate the virtual environment (Linux/Mac)
-pip install -r requirements.txt     # Install Python dependencies
-python main.py                      # Start the backend server
-```
-
 ## Contact
 
 With any questions, suggestions, or feedback, out:
